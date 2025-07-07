@@ -153,10 +153,31 @@
   function renderizar() {
     const tbody = document.getElementById("cadastrosBody");
     tbody.innerHTML = "";
-    let total = 0;
+
+    let totalGeral = 0;
+    let totalAprovado = 0;
+    let totalReprovado = 0;
+    let totalPendente = 0;
+    let valorPositivo = 0;
+    let valorNegativo = 0;
 
     dados.forEach((item, index) => {
-      total += item.valor;
+      totalGeral += item.valor;
+
+      if (item.valor >= 0) {
+        valorPositivo += item.valor;
+      } else {
+        valorNegativo += item.valor;
+      }
+
+      if (item.status === 'aprovado') {
+        totalAprovado += item.valor;
+      } else if (item.status === 'reprovado') {
+        totalReprovado += item.valor;
+      } else if (item.status === 'pendente') {
+        totalPendente += item.valor;
+      }
+
       const diasDesdeCadastro = Math.floor((new Date() - new Date(item.dataCadastro)) / (1000 * 60 * 60 * 24));
       let situacaoHtml = "";
 
@@ -195,11 +216,14 @@
     });
 
     document.getElementById("resumo").innerHTML = `
-      📊 Total: R$ ${total.toFixed(2)} | 
-      📋 Cadastros: ${dados.length} | 
-      ✅ Aprovados: ${dados.filter(d => d.status === 'aprovado').length} | 
-      ❌ Reprovados: ${dados.filter(d => d.status === 'reprovado').length} |
-      ⏳ Pendentes: ${dados.filter(d => d.status === 'pendente').length}
+      📊 Total Geral: R$ ${totalGeral.toFixed(2)} <br>
+      ✅ Aprovados: R$ ${totalAprovado.toFixed(2)} |
+      ❌ Reprovados: R$ ${totalReprovado.toFixed(2)} |
+      ⏳ Pendentes: R$ ${totalPendente.toFixed(2)} <br><br>
+      ➕ Valor Positivo: R$ ${valorPositivo.toFixed(2)} |
+      ➖ Valor Negativo: R$ ${valorNegativo.toFixed(2)} <br>
+      💰 Saldo Final: R$ ${(valorPositivo + valorNegativo).toFixed(2)} <br>
+      📋 Cadastros Totais: ${dados.length}
     `;
   }
 
